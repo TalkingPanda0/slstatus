@@ -1,49 +1,33 @@
 /* See LICENSE file for copyright and license details. */
-#include <errno.h>
+#include <stdint.h>
 #include <stdio.h>
-#include <string.h>
-#if defined(__linux__)
-#include <sys/sysinfo.h>
-#elif defined(__OpenBSD__)
-#include <sys/sysctl.h>
-#include <sys/time.h>
-#endif
+#include <time.h>
 
 #include "../util.h"
+
+#if defined(CLOCK_BOOTTIME)
+	#define UPTIME_FLAG CLOCK_BOOTTIME
+#elif defined(CLOCK_UPTIME)
+	#define UPTIME_FLAG CLOCK_UPTIME
+#else
+	#define UPTIME_FLAG CLOCK_MONOTONIC
+#endif
 
 const char *
 uptime(void)
 {
-	int h;
-	int m;
-	int uptime = 0;
-#if defined(__linux__)
-	struct sysinfo info;
+	char warn_buf[256];
+	uintmax_t h, m;
+	struct timespec uptime;
 
-	sysinfo(&info);
-	uptime = info.uptime;
-#elif defined(__OpenBSD__)
-	int mib[2];
-	size_t size;
-	time_t now;
-	struct timeval boottime;
-
-	time(&now);
-
-	mib[0] = CTL_KERN;
-	mib[1] = KERN_BOOTTIME;
-
-	size = sizeof(boottime);
-
-	if (sysctl(mib, 2, &boottime, &size, NULL, 0) != -1)
-		uptime = now - boottime.tv_sec;
-	else {
-		fprintf(stderr, "sysctl 'KERN_BOOTTIME': %s\n", strerror(errno));
+	if (clock_gettime(UPTIME_FLAG, &uptime) < 0) {
+		snprintf(warn_buf, 256, "clock_gettime %d", UPTIME_FLAG);
+		warn(warn_buf);
 		return NULL;
 	}
-#endif
-	h = uptime / 3600;
-	m = (uptime - h * 3600) / 60;
 
-	return bprintf("%dh %dm", h, m);
+	h = uptime.tv_sec / 3600;
+	m = uptime.tv_sec % 3600 / 60;
+
+	return bprintf("%juh %jum", h, m);
 }
