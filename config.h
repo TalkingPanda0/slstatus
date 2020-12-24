@@ -66,7 +66,7 @@ static const char unknown_str[] = "n/a";
 static const struct arg args[] = {
 	/* function format          argument */
     { cpu_perc, "[CPU:%s%|", NULL  },
-	{ temp, "%2s°]", "/sys/devices/platform/coretemp.0/hwmon/hwmon5/temp2_input" },
+	{ temp, "%2s°]", "/sys/devices/platform/coretemp.0/hwmon/hwmon4/temp2_input" },
 	{ ram_used, "[RAM:%sMB|", NULL  },
 	{ swap_used, "%sMB]", NULL  },
     { netspeed_tx,"[UP:%s]", "enp2s0"},
