@@ -65,11 +65,11 @@ static const char unknown_str[] = "n/a";
  */
 static const struct arg args[] = {
 	/* function format          argument */
-    { run_command, "[%s]", "playerctl metadata --format '{{ title }}'"  },
+    { run_command, "[%s]", "mocp -Q %title"  },
     { cpu_perc, "[CPU:%s%|", NULL  },
     { temp, "%2s°]", "/sys/class/thermal/thermal_zone0/temp" },
-	{ ram_used, "[RAM:%sMB|", NULL  },
-	{ swap_used, "%sMB]", NULL  },
+	{ ram_used, "[RAM:%s|", NULL  },
+	{ swap_used, "%s]", NULL  },
     { netspeed_tx,"[UP:%s]", "enp2s0"},
     { netspeed_rx,"[DOWN:%s]", "enp2s0"},
 	{ datetime, "[%s]","%F %I:%M" },
